@@ -134,7 +134,7 @@ jobs:
         run: |
           echo "payload:" > private.yaml
           curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "  - |%s|\n", $2}' | sed "s/|/'/g" >> Clash/private.yaml
-          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >>Clash/ private.yaml
+          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> Clash/private.yaml
 
       - name: Generate direct.yaml file
         run: |
