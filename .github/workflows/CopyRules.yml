@@ -40,9 +40,9 @@ jobs:
 
       - name: Generate icloud.list file
         run: |
-          curl -sSL ${custom_icloud} | grep -E "^full:" | awk -F ':' '{printf "%s\n", $2}' > Domainset/icloud.list
+          curl -sSL ${custom_icloud} | grep -E "^full:" | awk -F ':' '{printf "%s\n", $2}' > icloud.list
           curl -sSL ${custom_icloud} | grep -E "^domain:" | awk -F ':' '{printf ".%s\n", $2}' >> Domainset/icloud.list
-          curl -sSL ${custom_icloud} | grep -E "^full:" | awk -F ':' '{printf "DOMAIN,%s\n", $2}' > Ruleset/icloud.list
+          curl -sSL ${custom_icloud} | grep -E "^full:" | awk -F ':' '{printf "DOMAIN,%s\n", $2}' > ruleset/icloud.list
           curl -sSL ${custom_icloud} | grep -E "^domain:" | awk -F ':' '{printf "DOMAIN-SUFFIX,%s\n", $2}' >> Ruleset/icloud.list
 
       - name: Generate google.list file
