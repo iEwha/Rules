@@ -31,10 +31,12 @@ jobs:
           echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
         shell: bash
 
-      - name: Checkout the "release" branch
+      - name: Checkout the default branch
         uses: actions/checkout@v3
-        with:
-          ref: release
+
+      - name: Make directory
+        run: |
+          mkdir -p ruleset
 
       - name: Generate icloud.yaml file
         run: |
