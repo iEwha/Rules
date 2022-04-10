@@ -110,7 +110,7 @@ jobs:
           curl -sSL ${telegram_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' >> ruleset/telegramcidr.list
 
 
-     - name: Generate icloud.yaml file
+      - name: Generate icloud.yaml file
         run: |
           echo "payload:" > icloud.yaml
           curl -sSL ${custom_icloud} | grep -E "^(full|domain):" | awk -F ':' '{printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> icloud.yaml
