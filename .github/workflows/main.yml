@@ -195,6 +195,7 @@ jobs:
         run: |
           mkdir -p publish
           cp *.yaml ./publish/
+          mv Clash ./publish/
 
       - name: Release and upload assets
         uses: softprops/action-gh-release@v0.1.6
