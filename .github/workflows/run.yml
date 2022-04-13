@@ -202,8 +202,8 @@ jobs:
         run: |
           cd publish || exit 1
           git init
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "action@github.com"
+          git config --local user.name "iEwha"
+          git config --local user.email "royiewha@gmail.com"
           git checkout -b iosRules
           git add .
           git commit -m "${{ env.RELEASE_NAME }}"
