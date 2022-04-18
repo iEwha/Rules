@@ -115,9 +115,7 @@ jobs:
       - name: Generate icloud.yaml file
         run: |
           echo "payload:" > Ruleset/icloud.yaml
-          curl -sSL ${custom_icloud} | grep -E "^full:" | awk -F ':' '{printf "- DOMAIN,%s\n", $2}' | sed "s/|/'/g"  > Ruleset/icloud.yaml
-          curl -sSL ${custom_icloud} | grep -E "^domain:" | awk -F ':' '{printf "- DOMAIN-SUFFIX,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
-
+          curl -sSL ${custom_icloud} | grep -E "^(full|domain):" | awk -F ':' '{printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
 
       - name: Generate google.yaml file
         run: |
