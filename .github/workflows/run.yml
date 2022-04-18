@@ -29,6 +29,7 @@ jobs:
           echo "felixonmars_google=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/google.china.conf" >> $GITHUB_ENV
           echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
           echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
+          echo "lan_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/private.txt" >> $GITHUB_ENV
         shell: bash
 
       - name: Checkout the default branch
@@ -110,6 +111,75 @@ jobs:
           curl -sSL ${telegram_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' >> telegramcidr.list
           curl -sSL ${telegram_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' >> Ruleset/telegramcidr.list
 
+
+      - name: Generate icloud.yaml file
+        run: |
+          echo "payload:" > Ruleset/icloud.yaml
+          curl -sSL ${custom_icloud} | grep -E "^(full|domain):" | awk -F ':' '{printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
+
+      - name: Generate google.yaml file
+        run: |
+          echo "payload:" > Ruleset/google.yaml
+          curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> Ruleset/google.yaml
+
+      - name: Generate apple.yaml file
+        run: |
+          echo "payload:" > Ruleset/apple.yaml
+          curl -sSL ${felixonmars_apple} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> Ruleset/apple.yaml
+
+      - name: Generate private.yaml file
+        run: |
+          echo "payload:" > Ruleset/private.yaml
+          curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "  - |%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/private.yaml
+          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/private.yaml
+
+      - name: Generate direct.yaml file
+        run: |
+          echo "payload:" > Ruleset/direct.yaml
+          curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> Ruleset/direct.yaml
+          curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/direct.yaml
+
+      - name: Generate proxy.yaml file
+        run: |
+          echo "payload:" > Ruleset/proxy.yaml
+          curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> Ruleset/proxy.yaml
+          curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/proxy.yaml
+
+      - name: Generate reject.yaml file
+        run: |
+          echo "payload:" > Ruleset/reject.yaml
+          curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/reject.yaml
+
+      - name: Generate gfw.yaml file
+        run: |
+          echo "payload:" > Ruleset/gfw.yaml
+          curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/gfw.yaml
+
+      - name: Generate greatfire.yaml file
+        run: |
+          echo "payload:" > Ruleset/greatfire.yaml
+          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/greatfire.yaml
+
+      - name: Generate tld-not-cn.yaml file
+        run: |
+          echo "payload:" > Ruleset/tld-not-cn.yaml
+          curl -sSL "${custom_tld_not_cn}" | perl -ne '/^domain:([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$1|\n"' | sed "s/|/'/g" >> Ruleset/tld-not-cn.yaml
+
+      - name: Generate cncidr.yaml file
+        run: |
+          echo "payload:" > Ruleset/cncidr.yaml
+          curl -sSL ${cn_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/cncidr.yaml
+
+      - name: Generate telegramcidr.yaml file
+        run: |
+          echo "payload:" > Ruleset/telegramcidr.yaml
+          curl -sSL ${telegram_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/telegramcidr.yaml
+
+      - name: Generate lancidr.yaml file
+        run: |
+          echo "payload:" > Ruleset/lancidr.yaml
+          curl -sSL ${lan_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/lancidr.yaml
+
       - name: Move files to publish directory
         run: |
           mkdir -p publish
@@ -132,8 +202,7 @@ jobs:
         run: |
           cd publish || exit 1
           git init
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "action@github.com"
+          git config --local user.name "iEwha"
           git checkout -b iosRules
           git add .
           git commit -m "${{ env.RELEASE_NAME }}"
