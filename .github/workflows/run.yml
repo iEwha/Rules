@@ -114,8 +114,8 @@ jobs:
       - name: Generate icloud.yaml file
         run: |
           echo "payload:" > Ruleset/icloud.yaml
-          curl -sSL ${custom_icloud} | grep -E "^(full|domain):" | awk -F ':' '{printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
-
+          curl -sSL ${custom_icloud} | grep -E "^full:" | awk -F ':' '{printf "- DOMAIN,%s\n", $2}'| sed "s/|/'/g" > Ruleset/icloud.list
+          curl -sSL ${custom_icloud} | grep -E "^domain:" | awk -F ':' '{printf "- DOMAIN-SUFFIX,%s\n", $2}'| sed "s/|/'/g" >> Ruleset/icloud.list
       - name: Generate google.yaml file
         run: |
           echo "payload:" > Ruleset/google.yaml
@@ -152,12 +152,12 @@ jobs:
       - name: Generate gfw.yaml file
         run: |
           echo "payload:" > Ruleset/gfw.yaml
-          curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/gfw.yaml
+          curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/gfw.yaml
 
       - name: Generate greatfire.yaml file
         run: |
           echo "payload:" > Ruleset/greatfire.yaml
-          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/greatfire.yaml
+          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/greatfire.yaml
 
       - name: Generate tld-not-cn.yaml file
         run: |
@@ -173,7 +173,7 @@ jobs:
       - name: Generate telegramcidr.yaml file
         run: |
           echo "payload:" > Ruleset/telegramcidr.yaml
-          curl -sSL ${telegram_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "- IP-CIDR,|$1\n"' | sed "s/|/'/g" > Ruleset/telegramcidr.yaml
+          curl -sSL ${telegram_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "- IP-CIDR, |$1\n"' | sed "s/|/'/g" > Ruleset/telegramcidr.yaml
           curl -sSL ${telegram_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "- IP-CIDR6,|$1|\n"' | sed "s/|/'/g" >> Ruleset/telegramcidr.yaml
 
       - name: Move files to publish directory
