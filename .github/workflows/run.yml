@@ -29,7 +29,6 @@ jobs:
           echo "felixonmars_google=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/google.china.conf" >> $GITHUB_ENV
           echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
           echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
-          echo "lan_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/private.txt" >> $GITHUB_ENV
         shell: bash
 
       - name: Checkout the default branch
@@ -168,17 +167,14 @@ jobs:
       - name: Generate cncidr.yaml file
         run: |
           echo "payload:" > Ruleset/cncidr.yaml
-          curl -sSL ${cn_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/cncidr.yaml
+          curl -sSL ${cn_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "- IP-CIDR,$1\n"' | sed "s/|/'/g" > Ruleset/cncidr.yaml
+          curl -sSL ${cn_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' | sed "s/|/'/g" >> Ruleset/cncidr.yaml
           
       - name: Generate telegramcidr.yaml file
         run: |
           echo "payload:" > Ruleset/telegramcidr.yaml
-          curl -sSL ${telegram_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/telegramcidr.yaml
-         
-      - name: Generate lancidr.yaml file
-        run: |
-          echo "payload:" > Ruleset/lancidr.yaml
-          curl -sSL ${lan_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/lancidr.yaml
+          curl -sSL ${telegram_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "- IP-CIDR,$1\n"' | sed "s/|/'/g" > Ruleset/telegramcidr.yaml
+          curl -sSL ${telegram_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "- IP-CIDR6,$1\n"' | sed "s/|/'/g" >> Ruleset/telegramcidr.yaml
 
       - name: Move files to publish directory
         run: |
