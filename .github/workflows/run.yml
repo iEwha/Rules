@@ -27,7 +27,6 @@ jobs:
           echo "Loyalsoldier_greatfire=https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/greatfire.txt" >> $GITHUB_ENV
           echo "felixonmars_apple=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf" >> $GITHUB_ENV
           echo "felixonmars_google=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/google.china.conf" >> $GITHUB_ENV
-          echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
         shell: bash
 
       - name: Checkout the default branch
@@ -150,12 +149,6 @@ jobs:
         run: |
           echo "payload:" > Ruleset/tld-not-cn.yaml
           curl -sSL "${custom_tld_not_cn}" | perl -ne '/^domain:([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/tld-not-cn.yaml
-
-      - name: Generate cncidr.yaml file
-        run: |
-          echo "payload:" > Ruleset/cncidr.yaml
-          curl -sSL ${cn_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "  - IP-CIDR,$1\n"'  > Ruleset/cncidr.yaml
-          curl -sSL ${cn_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "  - IP-CIDR6,$1\n"'  >> Ruleset/cncidr.yaml
 
       - name: Move files to publish directory
         run: |
