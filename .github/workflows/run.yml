@@ -28,6 +28,7 @@ jobs:
           echo "felixonmars_apple=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf" >> $GITHUB_ENV
           echo "felixonmars_google=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/google.china.conf" >> $GITHUB_ENV
           echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
+          echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
         shell: bash
 
       - name: Checkout the default branch
@@ -95,7 +96,19 @@ jobs:
           curl -sSL ${custom_tld_not_cn} | grep -E "^domain:" | awk -F ':' '{printf ".%s\n", $2}' > tld-not-cn.list
           curl -sSL ${custom_tld_not_cn} | grep -E "^domain:" | awk -F ':' '{printf "DOMAIN-SUFFIX,%s\n", $2}' > Ruleset/tld-not-cn.list
 
+      - name: Generate cncidr.list file
+        run: |
+          curl -sSL ${cn_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "IP-CIDR,$1\n"' > cncidr.list
+          curl -sSL ${cn_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "IP-CIDR,$1\n"' > Ruleset/cncidr.list
+          curl -sSL ${cn_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' >> cncidr.list
+          curl -sSL ${cn_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' >> Ruleset/cncidr.list
 
+      - name: Generate Telegramcidr.list file
+        run: |
+          curl -sSL ${telegram_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "IP-CIDR,$1\n"' > Telegramcidr.list
+          curl -sSL ${telegram_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "IP-CIDR,$1\n"' > Ruleset/Telegramcidr.list
+          curl -sSL ${telegram_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' >> Telegramcidr.list
+          curl -sSL ${telegram_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' >> Ruleset/Telegramcidr.list
 
       - name: Generate icloud.yaml file
         run: |
@@ -156,6 +169,12 @@ jobs:
           echo "payload:" > Ruleset/cncidr.yaml
           curl -sSL ${cn_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "  - IP-CIDR,$1\n"' | sed "s/|/'/g" >> Ruleset/cncidr.yaml
           curl -sSL ${cn_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "  - IP-CIDR6,$1\n"' | sed "s/|/'/g">> Ruleset/cncidr.yaml
+
+      - name: Generate Telegramcidr.yaml file
+        run: |
+          echo "payload:" > Ruleset/Telegramcidr.yaml
+          curl -sSL ${telegram_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "  - IP-CIDR,$1\n"' | sed "s/|/'/g" >> Ruleset/Telegramcidr.yaml
+          curl -sSL ${telegram_cidr} | perl -ne '/(.+\/\d+)/ && print "  - IP-CIDR6,$1\n"' | sed "s/|/'/g" >> Ruleset/Telegramcidr.yaml
 
       - name: Move files to publish directory
         run: |
