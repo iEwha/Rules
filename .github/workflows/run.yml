@@ -67,27 +67,27 @@ jobs:
           curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "DOMAIN,$2\n"' > Ruleset/Proxy.list
           curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "DOMAIN-SUFFIX,$2\n"' >> Ruleset/Proxy.list
 
-      - name: Generate reject.list file
+      - name: Generate Reject.list file
         run: |
-          curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print ".$2\n"' > reject.list
-          curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "DOMAIN-SUFFIX,$2\n"' > Ruleset/reject.list
+          curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print ".$2\n"' > Reject.list
+          curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "DOMAIN-SUFFIX,$2\n"' > Ruleset/Reject.list
 
-      - name: Generate private.list file
+      - name: Generate Private.list file
         run: |
-          curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "%s\n", $2}' > private.list
-          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf ".%s\n", $2}' >> private.list
-          curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "DOMAIN,%s\n", $2}' > Ruleset/private.list
-          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "DOMAIN-SUFFIX,%s\n", $2}' >> Ruleset/private.list
+          curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "%s\n", $2}' > Private.list
+          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf ".%s\n", $2}' >> Private.list
+          curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "DOMAIN,%s\n", $2}' > Ruleset/Private.list
+          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "DOMAIN-SUFFIX,%s\n", $2}' >> Ruleset/Private.list
 
       - name: Generate ProxyGFW.list file
         run: |
           curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print ".$2\n"' > ProxyGFW.list
           curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "DOMAIN-SUFFIX,$2\n"' > Ruleset/ProxyGFW.list
 
-      - name: Generate greatfire.list file
+      - name: Generate Greatfire.list file
         run: |
-          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print ".$2\n"' > greatfire.list
-          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "DOMAIN-SUFFIX,$2\n"' > Ruleset/greatfire.list
+          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print ".$2\n"' > Greatfire.list
+          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "DOMAIN-SUFFIX,$2\n"' > Ruleset/Greatfire.list
 
       - name: Generate tld-not-cn.list file
         run: |
@@ -102,21 +102,21 @@ jobs:
           curl -sSL ${custom_icloud}  | awk -F ':' '/^full:/ {printf " - DOMAIN,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
           curl -sSL ${custom_icloud}  | awk -F ':' '/^domain:/ {printf " - DOMAIN-SUFFIX,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
 
-      - name: Generate google.yaml file
+      - name: Generate Google.yaml file
         run: |
-          echo "payload:" > Ruleset/google.yaml
-          curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/google.yaml
+          echo "payload:" > Ruleset/Google.yaml
+          curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/Google.yaml
           
-      - name: Generate apple.yaml file
+      - name: Generate Apple.yaml file
         run: |
-          echo "payload:" > Ruleset/apple.yaml
-          curl -sSL ${felixonmars_apple} | perl -ne '/^server=\/([^\/]+)\// && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/apple.yaml
+          echo "payload:" > Ruleset/Apple.yaml
+          curl -sSL ${felixonmars_apple} | perl -ne '/^server=\/([^\/]+)\// && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/Apple.yaml
 
-      - name: Generate private.yaml file
+      - name: Generate Private.yaml file
         run: |
-          echo "payload:" > Ruleset/private.yaml
-          curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "  - DOMAIN,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/private.yaml
-          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - DOMAIN-SUFFIX,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/private.yaml
+          echo "payload:" > Ruleset/Private.yaml
+          curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "  - DOMAIN,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/Private.yaml
+          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - DOMAIN-SUFFIX,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/Private.yaml
 
       - name: Generate Direct.yaml file
         run: |
@@ -140,10 +140,10 @@ jobs:
           echo "payload:" > Ruleset/ProxyGFW.yaml
           curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/ProxyGFW.yaml
 
-      - name: Generate greatfire.yaml file
+      - name: Generate Greatfire.yaml file
         run: |
-          echo "payload:" > Ruleset/greatfire.yaml
-          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/greatfire.yaml
+          echo "payload:" > Ruleset/Greatfire.yaml
+          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/Greatfire.yaml
 
       - name: Generate tld-not-cn.yaml file
         run: |
