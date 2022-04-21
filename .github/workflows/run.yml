@@ -100,9 +100,7 @@ jobs:
       - name: Generate cncidr.list file
         run: |
           curl -sSL ${cn_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "IP-CIDR,$1\n"' > cncidr.list
-          curl -sSL ${cn_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "IP-CIDR,$1\n"' > Ruleset/cncidr.list
           curl -sSL ${cn_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' >> cncidr.list
-          curl -sSL ${cn_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "IP-CIDR6,$1\n"' >> Ruleset/cncidr.list
 
       - name: Generate Telegramcidr.list file
         run: |
