@@ -202,7 +202,8 @@ jobs:
         run: |
           cd publish || exit 1
           git init
-          git config --global user.name "iEwha"
+          git config --global user.name ${{ secrets.GIT_USER }}
+          git config --global user.email ${{ secrets.GIT_EMAIL }}
           git checkout -b iosRules
           git add .
           git commit -m "${{ env.RELEASE_NAME }}"
