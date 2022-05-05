@@ -30,6 +30,7 @@ jobs:
           echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
           echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
           echo "lan_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/private.txt" >> $GITHUB_ENV
+          echo "SukkaW-reject=https://raw.githubusercontent.com/SukkaW/Surge/gh-pages/List/domainset/reject.conf" >> $GITHUB_ENV
         shell: bash
 
       - name: Checkout the default branch
@@ -74,6 +75,11 @@ jobs:
         run: |
           curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print ".$2\n"' > Reject.list
           curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "DOMAIN-SUFFIX,$2\n"' > Ruleset/Reject.list
+
+      - name: Generate Advertising.list file
+        run: |
+          curl -sSL ${SukkaW-reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print ".$2\n"' > Advertising.list
+          curl -sSL ${SukkaW-reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "DOMAIN-SUFFIX,$2\n"' > Ruleset/Advertising.list
 
       - name: Generate Private.list file
         run: |
@@ -145,6 +151,11 @@ jobs:
         run: |
           echo "payload:" > Ruleset/Reject.yaml
           curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/Reject.yaml
+
+      - name: Generate Advertising.yaml file
+        run: |
+          echo "payload:" > Ruleset/Reject.yaml
+          curl -sSL ${SukkaW-reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/Advertising.yaml
 
       - name: Generate ProxyGFW.yaml file
         run: |
