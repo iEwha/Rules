@@ -3,11 +3,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "30 22 * * *"
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - "**/README.md"
+
 jobs:
   build:
     name: Build
