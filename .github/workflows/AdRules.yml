@@ -51,8 +51,8 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           add: "-A"
-          author_name: iEwha
-          author_email: royiewha@gmail.com
+          author_name: ${{ secrets.GIT_USER }}
+          author_email: ${{ secrets.GIT_EMAIL }}
           message: "Update AdRules"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
