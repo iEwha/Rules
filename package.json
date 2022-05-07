@@ -4,7 +4,7 @@
   "description": "* [xOS](https://github.com/xOS/Config.git) \r * [Loyalsoldier](https://github.com/Loyalsoldier)",
   "main": "index.js",
   "scripts": {
-    "update-adrules": "node Script/Tools/AdRules"
+    "update-adrules": "node Script/AdRules"
   },
   "repository": {
     "type": "git",
