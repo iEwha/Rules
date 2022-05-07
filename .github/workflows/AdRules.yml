@@ -39,13 +39,13 @@ jobs:
         
       - name: Merge and Rules and remove duplicates
         run: |
-          curl -LR -o RuleSet/AdRules/anti-ad.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-surge2.txt"
-          curl -LR -o RuleSet/AdRules/uBlack.list "https://raw.githubusercontent.com/dallaslu/penzai-list/main/Surge.txt"
-          awk 'FNR==1{print ""}{print}' RuleSet/AdRules/*.list > RuleSet/AdRules/Merge.txt
-          awk '!seen[$0]++' RuleSet/AdRules/Merge.txt > RuleSet/AdRules/Merge.list
-          grep -v -f RuleSet/AdRules/Bypass.list RuleSet/AdRules/Merge.list | sed '/^$/d' > RuleSet/AdRule.list
-          rm -rf RuleSet/AdRules/Merge.txt
-          rm -rf RuleSet/AdRules/Merge.list
+          curl -LR -o Ruleset/AdRules/anti-ad.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-surge2.txt"
+          curl -LR -o Ruleset/AdRules/uBlack.list "https://raw.githubusercontent.com/dallaslu/penzai-list/main/Surge.txt"
+          awk 'FNR==1{print ""}{print}' Ruleset/AdRules/*.list > Ruleset/AdRules/Merge.txt
+          awk '!seen[$0]++' Ruleset/AdRules/Merge.txt > Ruleset/AdRules/Merge.list
+          grep -v -f Ruleset/AdRules/Bypass.list Ruleset/AdRules/Merge.list | sed '/^$/d' > Ruleset/AdRule.list
+          rm -rf Ruleset/AdRules/Merge.txt
+          rm -rf Ruleset/AdRules/Merge.list
 
       - name: commit, push
         uses: EndBug/add-and-commit@v9
