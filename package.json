@@ -1,14 +1,21 @@
 {
-  "name": "update-adrules",
+  "name": "rules",
   "version": "1.0.0",
+  "description": "* [xOS](https://github.com/xOS/Config.git) \r * [Loyalsoldier](https://github.com/Loyalsoldier)",
   "main": "index.js",
-  "repository": "git@github.com:iEwha/Script.git",
-  "author": "iEwha<royiewha@gmail.com>",
-  "license": "MIT",
-  "private": true,
   "scripts": {
-    "update-adrules": "node Script/Tools/AdRules"
+    "test": "node Script/Tools/AdRules"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iEwha/Rules.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iEwha/Rules/issues"
+  },
+  "homepage": "https://github.com/iEwha/Rules#readme",
   "dependencies": {
     "@adguard/hostlist-compiler": "^1.0.12",
     "@sindresorhus/slugify": "^2.1.0",
@@ -16,10 +23,5 @@
     "better-ajv-errors": "^1.2.0",
     "fs-extra": "^10.1.0",
     "jsonpointer": "^5.0.0"
-  },
-  "resolutions": {
-    "axios": "^0.24.0",
-    "jsonpointer": "^5.0.0",
-    "better-ajv-errors": "^1.1.2"
   }
 }
