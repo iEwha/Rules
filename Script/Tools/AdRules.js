@@ -181,6 +181,18 @@ const configurations = [{
     ],
 },
 {
+    name: 'Mobile',
+    sources: [{
+        source: 'https://raw.githubusercontent.com/AdguardTeam/FiltersRegistry/master/filters/filter_11_Mobile/filter.txt',
+    },],
+    transformations: [
+        'RemoveComments',
+        'RemoveModifiers',
+        'Validate',
+        'Deduplicate',
+    ],
+},
+{
     name: 'CJXsAnnoyanceList',
     sources: [{
         source: 'https://raw.githubusercontent.com/AdguardTeam/FiltersRegistry/master/filters/ThirdParty/filter_220_CJXsAnnoyanceList/filter.txt',
