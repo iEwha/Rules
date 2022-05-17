@@ -141,7 +141,7 @@ jobs:
       - name: Generate AdRule.yaml file
         run: |
           echo "payload:" > Ruleset/AdRule.yaml
-          curl -sSL ${AdRule} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/AdRule.yaml
+          curl -sSL ${AdRule} | print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/AdRule.yaml
 
       - name: Generate ProxyGFW.yaml file
         run: |
