@@ -26,7 +26,6 @@ jobs:
           echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
           echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
           echo "lan_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/private.txt" >> $GITHUB_ENV
-          echo "AdRule=https://raw.githubusercontent.com/iEwha/Profiles/master/Provider/AdRule.list" >> $GITHUB_ENV
         shell: bash
 
       - name: Checkout the default branch
@@ -137,11 +136,6 @@ jobs:
         run: |
           echo "payload:" > Ruleset/Reject.yaml
           curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/Reject.yaml
-
-      - name: Generate AdRule.yaml file
-        run: |
-          echo "payload:" > Ruleset/AdRule.yaml
-          curl -sSL ${AdRule} | print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/AdRule.yaml
 
       - name: Generate ProxyGFW.yaml file
         run: |
