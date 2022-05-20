@@ -100,73 +100,58 @@ jobs:
 
       - name: Generate icloud.yaml file
         run: |
-          echo "payload:" > Ruleset/icloud.yaml
-          curl -sSL ${custom_icloud}  | awk -F ':' '/^full:/ {printf " - DOMAIN,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
-          curl -sSL ${custom_icloud}  | awk -F ':' '/^domain:/ {printf " - DOMAIN-SUFFIX,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
-
+          echo "payload:" >Ruleset/icloud.yaml
+          curl -sSL ${custom_icloud} | grep -E "^(full|domain):" | awk -F ':' '{printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
       - name: Generate Google.yaml file
         run: |
           echo "payload:" > Ruleset/Google.yaml
-          curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/Google.yaml
-          
+          curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> Ruleset/Google.yaml
       - name: Generate Apple.yaml file
         run: |
           echo "payload:" > Ruleset/Apple.yaml
-          curl -sSL ${felixonmars_apple} | perl -ne '/^server=\/([^\/]+)\// && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/Apple.yaml
-
+          curl -sSL ${felixonmars_apple} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> Ruleset/Apple.yaml
       - name: Generate Private.yaml file
         run: |
-          echo "payload:" > Ruleset/Private.yaml
-          curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "  - DOMAIN,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/Private.yaml
-          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - DOMAIN-SUFFIX,%s\n", $2}' | sed "s/|/'/g" >> Ruleset/Private.yaml
-
+          echo "payload:" >Ruleset/Private.yaml
+          curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "  - |%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/Private.yaml
+          curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/Private.yaml
       - name: Generate Direct.yaml file
         run: |
           echo "payload:" > Ruleset/Direct.yaml
-          curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN,$2\n"' | sed "s/|/'/g" >> Ruleset/Direct.yaml
-          curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/Direct.yaml
-
+          curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> Ruleset/Direct.yaml
+          curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/Direct.yaml
       - name: Generate Proxy.yaml file
         run: |
           echo "payload:" > Ruleset/Proxy.yaml
-          curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "- DOMAIN,$2\n"' >> Ruleset/Proxy.yaml
-          curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/Proxy.yaml
-
+          curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> Ruleset/Proxy.yaml
+          curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/Proxy.yaml
       - name: Generate Reject.yaml file
         run: |
           echo "payload:" > Ruleset/Reject.yaml
-          curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/Reject.yaml
-
+          curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/Reject.yaml
       - name: Generate ProxyGFW.yaml file
         run: |
-          echo "payload:" > Ruleset/ProxyGFW.yaml
-          curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/ProxyGFW.yaml
-
+          echo "payload:" >  Ruleset/ProxyGFW.yaml
+          curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >>  Ruleset/ProxyGFW.yaml
       - name: Generate Greatfire.yaml file
         run: |
           echo "payload:" > Ruleset/Greatfire.yaml
-          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$2\n"' | sed "s/|/'/g" >> Ruleset/Greatfire.yaml
-
+          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/Greatfire.yaml
       - name: Generate tld-not-cn.yaml file
         run: |
           echo "payload:" > Ruleset/tld-not-cn.yaml
-          curl -sSL "${custom_tld_not_cn}" | perl -ne '/^domain:([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - DOMAIN-SUFFIX,$1\n"' | sed "s/|/'/g" >> Ruleset/tld-not-cn.yaml
-
+          curl -sSL "${custom_tld_not_cn}" | perl -ne '/^domain:([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$1|\n"' | sed "s/|/'/g" >> Ruleset/tld-not-cn.yaml
       - name: Generate cncidr.yaml file
         run: |
           echo "payload:" > Ruleset/cncidr.yaml
-          curl -sSL ${cn_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "  - IP-CIDR,$1\n"' | sed "s/|/'/g" >> Ruleset/cncidr.yaml
-          curl -sSL ${cn_cidr} | grep ":" | perl -ne '/(.+\/\d+)/ && print "  - IP-CIDR6,$1\n"' | sed "s/|/'/g">> Ruleset/cncidr.yaml
-
+          curl -sSL ${cn_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/cncidr.yaml
       - name: Generate Telegramcidr.yaml file
         run: |
           echo "payload:" > Ruleset/Telegramcidr.yaml
-          curl -sSL ${telegram_cidr} | perl -ne '/^(\d{1,3}(\.\d{1,3}){3}\/\d{1,2})/ && print "  - IP-CIDR,$1\n"' | sed "s/|/'/g" >> Ruleset/Telegramcidr.yaml
-          curl -sSL ${telegram_cidr} | perl -ne '/(.+\/\d+)/ && print "  - IP-CIDR6,$1\n"' | sed "s/|/'/g" >> Ruleset/Telegramcidr.yaml
-
+          curl -sSL ${telegram_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/Telegramcidr.yaml
       - name: Generate Lancidr.yaml file
         run: |
-          echo "payload:" > Ruleset/Lancidr.yaml
+          echo "payload:" >Ruleset/Lancidr.yaml
           curl -sSL ${lan_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/Lancidr.yaml
 
       - name: Move files to publish directory
