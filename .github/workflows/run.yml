@@ -19,7 +19,6 @@ jobs:
           echo "Loyalsoldier_proxy=https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt" >> $GITHUB_ENV
           echo "Loyalsoldier_direct=https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt" >> $GITHUB_ENV
           echo "felixonmars_apple=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf" >> $GITHUB_ENV
-          echo "felixonmars_google=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/google.china.conf" >> $GITHUB_ENV
           echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
           echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
           echo "lan_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/private.txt" >> $GITHUB_ENV
@@ -38,11 +37,6 @@ jobs:
           curl -sSL ${custom_icloud} | grep -E "^domain:" | awk -F ':' '{printf ".%s\n", $2}' >>  icloud.list
           curl -sSL ${custom_icloud} | grep -E "^full:" | awk -F ':' '{printf "DOMAIN,%s\n", $2}' > Ruleset/icloud.list
           curl -sSL ${custom_icloud} | grep -E "^domain:" | awk -F ':' '{printf "DOMAIN-SUFFIX,%s\n", $2}' >> Ruleset/icloud.list
-
-      - name: Generate Google.list file
-        run: |
-          curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print ".$1\n"' > Google.list
-          curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print "DOMAIN-SUFFIX,$1\n"' > Ruleset/Google.list
 
       - name: Generate Apple.list file
         run: |
@@ -85,29 +79,30 @@ jobs:
         run: |
           echo "payload:" >Ruleset/icloud.yaml
           curl -sSL ${custom_icloud} | grep -E "^(full|domain):" | awk -F ':' '{printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/icloud.yaml
-      - name: Generate Google.yaml file
-        run: |
-          echo "payload:" > Ruleset/Google.yaml
-          curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> Ruleset/Google.yaml
+
       - name: Generate Apple.yaml file
         run: |
           echo "payload:" > Ruleset/Apple.yaml
           curl -sSL ${felixonmars_apple} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> Ruleset/Apple.yaml
+
       - name: Generate Private.yaml file
         run: |
           echo "payload:" >Ruleset/Private.yaml
           curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "  - |%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/Private.yaml
           curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> Ruleset/Private.yaml
+
       - name: Generate Direct.yaml file
         run: |
           echo "payload:" > Ruleset/Direct.yaml
           curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> Ruleset/Direct.yaml
           curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/Direct.yaml
+
       - name: Generate Proxy.yaml file
         run: |
           echo "payload:" > Ruleset/Proxy.yaml
           curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> Ruleset/Proxy.yaml
           curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> Ruleset/Proxy.yaml
+
       - name: Generate Reject.yaml file
         run: |
           echo "payload:" > Ruleset/Reject.yaml
@@ -117,10 +112,12 @@ jobs:
         run: |
           echo "payload:" > Ruleset/cncidr.yaml
           curl -sSL ${cn_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/cncidr.yaml
+
       - name: Generate Telegramcidr.yaml file
         run: |
           echo "payload:" > Ruleset/Telegramcidr.yaml
           curl -sSL ${telegram_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> Ruleset/Telegramcidr.yaml
+
       - name: Generate Lancidr.yaml file
         run: |
           echo "payload:" >Ruleset/Lancidr.yaml
